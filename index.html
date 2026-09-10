@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telegram Mini App</title>
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  
+  <!-- Updated Monetag SDK Script -->
+  <script src="//libtl.com/sdk.js" data-zone="11759773" data-sdk="show_11759773"></script>
+
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --accent-color: #24a1de;
+      --text-color: #f8fafc;
+      --text-dim: #94a3b8;
+      --border-color: #334155;
+    }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding-bottom: 70px;
+      user-select: none;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .user-info { display: flex; align-items: center; gap: 10px; }
+    .avatar { width: 35px; height: 35px; border-radius: 50%; background: var(--accent-color); display: flex; align-items: center; justify-content: center; font-weight: bold; }
+    .badge { background: #1e293b; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border-color); font-weight: bold; color: #f59e0b; }
+    
+    .container { padding: 20px; }
+    .card { background: var(--card-bg); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border-color); backdrop-filter: blur(5px); }
+    .btn { background: var(--accent-color); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: bold; width: 100%; cursor: pointer; transition: 0.2s; }
+    .btn:active { transform: scale(0.98); }
+    
+    /* Navigation Bar */
+    .navbar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(15, 23, 42, 0.95);
+      display: flex; justify-content: space-around;
+      padding: 10px 0; border-top: 1px solid var(--border-color);
+      backdrop-filter: blur(10px); z-index: 100;
+    }
+    .nav-item { color: var(--text-dim); text-decoration: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+    .nav-item.active { color: var(--accent-color); font-weight: bold; }
+    
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    input, select { width: 100%; padding: 12px; margin-top: 8px; border-radius: 8px; border: 1px solid var(--border-color); background: #0f172a; color: white; box-sizing: border-box; }
+
+    /* Mandatory Join Modal Screen Overlay */
+    #join-modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.98);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 25px;
+      text-align: center;
+      width: 100%;
+      max-width: 350px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mandatory Join Overlay -->
+  <div id="join-modal">
+    <div class="modal-box">
+      <h2 style="margin-top: 0; color: var(--accent-color);">Community Verification</h2>
+      <p style="font-size: 14px; color: var(--text-dim); line-height: 1.5; margin-bottom: 20px;">
+        You must join our official community group to unlock and start using this app.
+      </p>
+      <button class="btn" onclick="window.joinChannel()" style="margin-bottom: 12px; background: #10b981;">
+        Join Official Group
+      </button>
+      <button class="btn" onclick="window.verifyJoin()" style="background: var(--accent-color);">
+        I Have Joined
+      </button>
+    </div>
+  </div>
+
+  <!-- Top Header -->
+  <header>
+    <div class="user-info">
+      <div class="avatar" id="user-avatar">U</div>
+      <span id="user-name" style="font-weight: 600;">User</span>
+    </div>
+    <div class="badge">Coins: <span id="coin-balance">0</span></div>
+  </header>
+
+  <!-- Main Content Area -->
+  <div class="container">
+    
+    <!-- Tab 1: Dashboard -->
+    <div id="tab-dashboard" class="tab-content active">
+      <div class="card" style="text-align: center;">
+        <h2 style="margin: 0; color: var(--text-dim);">Total Earnings</h2>
+        <h1 style="font-size: 40px; margin: 10px 0; color: #f59e0b;"><span id="dash-coins">0</span> Coins</h1>
+        <p style="margin: 0; color: #22c55e; font-weight: bold;">Value: $<span id="dash-usd">0.000</span></p>
+      </div>
+
+      <div class="card">
+        <h3>Watch & Earn</h3>
+        <p style="color: var(--text-dim); font-size: 14px;">Watch short ads to earn 10 coins ($0.001) per view.</p>
+        <button class="btn" onclick="window.watchAd()">Watch Ad (+10 Coins)</button>
+      </div>
+    </div>
+
+    <!-- Tab 2: Ads -->
+    <div id="tab-ads" class="tab-content">
+      <div class="card">
+        <h3>Monetag Ad Tasks</h3>
+        <p style="color: var(--text-dim); font-size: 14px;">Complete ad tasks below to gain extra rewards.</p>
+        <button class="btn" style="margin-bottom: 10px;" onclick="window.watchAd()">Watch Direct Ad</button>
+        <button class="btn" style="background: #8b5cf6;" onclick="window.watchAd()">Bonus Video Ad</button>
+      </div>
+    </div>
+
+    <!-- Tab 3: Referral -->
+    <div id="tab-referral" class="tab-content">
+      <div class="card">
+        <h3>Invite Friends</h3>
+        <p style="color: var(--text-dim); font-size: 14px;">Earn 50 bonus coins for every friend who joins using your link!</p>
+        <button class="btn" style="background: #22c55e;" onclick="window.shareReferral()">Invite Friends</button>
+      </div>
+    </div>
+
+    <!-- Tab 4: Wallet -->
+    <div id="tab-wallet" class="tab-content">
+      <div class="card">
+        <h3>Withdraw Funds</h3>
+        <p style="font-size: 14px; color: var(--text-dim);">Minimum Withdrawal: <strong style="color: white;">$2.00 (20,000 Coins)</strong></p>
+        
+        <label style="font-size: 13px; color: var(--text-dim);">Select Payment Method:</label>
+        <select id="paymentMethod" onchange="window.updatePlaceholder()">
+          <option value="BEP20">BNB Smart Chain (BEP-20)</option>
+          <option value="BUID">Binance UID</option>
+        </select>
+        
+        <div style="margin-top: 15px;">
+          <label style="font-size: 13px; color: var(--text-dim);">Wallet Address / ID:</label>
+          <input type="text" id="walletAddress" placeholder="0x1a2b3c4d... (BEP-20 Address)">
+        </div>
+        
+        <button class="btn" style="margin-top: 20px;" onclick="window.requestWithdrawal()">Withdraw Cash</button>
+      </div>
+    </div>
+
+    <!-- Tab 5: Stats -->
+    <div id="tab-stats" class="tab-content">
+      <div class="card">
+        <h3>Your Statistics</h3>
+        <p style="color: var(--text-dim);">User ID: <span id="stat-uid" style="color: white;">-</span></p>
+        <p style="color: var(--text-dim);">Total Ads Watched: <span id="stat-ads" style="color: white;">0</span></p>
+        <p style="color: var(--text-dim);">Total Referrals: <span id="stat-ref" style="color: white;">0</span></p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <div class="navbar">
+    <div class="nav-item active" onclick="window.switchTab('dashboard', this)">Dashboard</div>
+    <div class="nav-item" onclick="window.switchTab('ads', this)">Ads</div>
+    <div class="nav-item" onclick="window.switchTab('referral', this)">Refer</div>
+    <div class="nav-item" onclick="window.switchTab('wallet', this)">Wallet</div>
+    <div class="nav-item" onclick="window.switchTab('stats', this)">Stats</div>
+  </div>
+
+  <!-- Firebase Realtime Database SDK & Main Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // Your Exact Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCizaCuNkTOsdyeLErVsUzjTj6P0Du6zZw",
+      authDomain: "social-media-fe850.firebaseapp.com",
+      databaseURL: "https://social-media-fe850-default-rtdb.firebaseio.com",
+      projectId: "social-media-fe850",
+      storageBucket: "social-media-fe850.firebasestorage.app",
+      messagingSenderId: "264506398502",
+      appId: "1:264506398502:web:56d2722066cb55ec8353e7"
+    };
+
+    // Initialize Firebase & Realtime Database
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Initialize Telegram WebApp SDK
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    const user = tg.initDataUnsafe?.user || { id: 12345678, first_name: "Demo User" };
+    
+    // UI Init
+    document.getElementById('user-name').innerText = user.first_name;
+    document.getElementById('user-avatar').innerText = user.first_name.charAt(0);
+    document.getElementById('stat-uid').innerText = user.id;
+
+    const userRef = ref(db, 'users/' + user.id);
+
+    // Fetch user data or create if new
+    async function loadUserData() {
+      try {
+        const snap = await get(userRef);
+        if (!snap.exists()) {
+          await set(userRef, {
+            coins: 0,
+            adsWatched: 0,
+            referrals: 0,
+            createdAt: new Date().toISOString()
+          });
+        }
+        await updateUI();
+      } catch (err) {
+        console.error("Firebase Database Error:", err);
+      }
+    }
+
+    // Refresh UI elements
+    async function updateUI() {
+      try {
+        const snap = await get(userRef);
+        if (snap.exists()) {
+          const data = snap.val();
+          const coins = data.coins || 0;
+          const usd = (coins * 0.0001).toFixed(3);
+
+          document.getElementById('coin-balance').innerText = coins;
+          document.getElementById('dash-coins').innerText = coins;
+          document.getElementById('dash-usd').innerText = usd;
+          document.getElementById('stat-ads').innerText = data.adsWatched || 0;
+          document.getElementById('stat-ref').innerText = data.referrals || 0;
+        }
+      } catch (err) {
+        console.error("UI Update Error:", err);
+      }
+    }
+
+    // Global Functions Binding
+    window.joinChannel = function() {
+      tg.openTelegramLink('https://t.me/socialpulse_bots');
+    };
+
+    window.verifyJoin = function() {
+      document.getElementById('join-modal').style.display = 'none';
+    };
+
+    window.watchAd = async function() {
+      // Trigger Monetag SDK Rewarded / Interstitial Ad if available
+      if (typeof show_11759773 === 'function') {
+        show_11759773().then(() => {
+          rewardUser();
+        }).catch(() => {
+          rewardUser();
+        });
+      } else {
+        rewardUser();
+      }
+    };
+
+    async function rewardUser() {
+      try {
+        const snap = await get(userRef);
+        const currentData = snap.val() || { coins: 0, adsWatched: 0 };
+        
+        await update(userRef, {
+          coins: (currentData.coins || 0) + 10,
+          adsWatched: (currentData.adsWatched || 0) + 1
+        });
+
+        alert("Success! You earned 10 Coins.");
+        updateUI();
+      } catch (err) {
+        console.error("Failed to update points:", err);
+      }
+    }
+
+    window.requestWithdrawal = async function() {
+      try {
+        const snap = await get(userRef);
+        const coins = snap.val()?.coins || 0;
+        const method = document.getElementById('paymentMethod').value;
+        const address = document.getElementById('walletAddress').value.trim();
+
+        if (coins < 20000) {
+          alert("Insufficient balance! Minimum withdrawal is 20,000 Coins ($2.00).");
+          return;
+        }
+
+        if (!address) {
+          alert("Please enter a valid wallet address or ID!");
+          return;
+        }
+
+        if (method === "BEP20" && !address.startsWith("0x")) {
+          alert("Invalid BEP-20 address! It must start with '0x'.");
+          return;
+        }
+
+        alert("Withdrawal request submitted successfully!");
+      } catch (err) {
+        console.error("Withdrawal error:", err);
+      }
+    };
+
+    window.shareReferral = function() {
+      const refLink = `https://t.me/share/url?url=https://t.me/socialpulse_bots?start=${user.id}&text=Join%20and%20earn%20money!`;
+      tg.openTelegramLink(refLink);
+    };
+
+    window.switchTab = function(tabName, element) {
+      document.querySelectorAll('.tab-content').forEach(item => item.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+      
+      document.getElementById('tab-' + tabName).classList.add('active');
+      if (element) {
+        element.classList.add('active');
+      }
+    };
+
+    window.updatePlaceholder = function() {
+      const method = document.getElementById('paymentMethod').value;
+      const input = document.getElementById('walletAddress');
+      if (method === 'BEP20') {
+        input.placeholder = "0x1a2b3c4d... (BEP-20 Address)";
+      } else {
+        input.placeholder = "Ex: 123456789 (Binance UID)";
+      }
+    };
+
+    // Load Data on Startup
+    loadUserData();
+  </script>
+</body>
+</html>
