@@ -7,14 +7,15 @@
   <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   
-  <!-- Updated Monetag SDK Script -->
+  <!-- Monetag SDK Script -->
   <script src="//libtl.com/sdk.js" data-zone="11759773" data-sdk="show_11759773"></script>
 
   <style>
     :root {
       --bg-color: #0f172a;
-      --card-bg: rgba(30, 41, 59, 0.7);
-      --accent-color: #24a1de;
+      --card-bg: rgba(30, 41, 59, 0.85);
+      --accent-color: #0088cc;
+      --accent-hover: #0077b5;
       --text-color: #f8fafc;
       --text-dim: #94a3b8;
       --border-color: #334155;
@@ -24,46 +25,84 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg-color);
       color: var(--text-color);
-      padding-bottom: 70px;
+      padding-bottom: 90px;
       user-select: none;
     }
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 15px 20px;
-      background: rgba(15, 23, 42, 0.9);
+      padding: 16px 20px;
+      background: rgba(15, 23, 42, 0.95);
       backdrop-filter: blur(10px);
       position: sticky;
       top: 0;
       z-index: 100;
       border-bottom: 1px solid var(--border-color);
     }
-    .user-info { display: flex; align-items: center; gap: 10px; }
-    .avatar { width: 35px; height: 35px; border-radius: 50%; background: var(--accent-color); display: flex; align-items: center; justify-content: center; font-weight: bold; }
-    .badge { background: #1e293b; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border-color); font-weight: bold; color: #f59e0b; }
+    .user-info { display: flex; align-items: center; gap: 12px; }
+    .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-color); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; }
+    .badge { background: #1e293b; padding: 8px 14px; border-radius: 20px; border: 1px solid var(--border-color); font-weight: bold; color: #f59e0b; font-size: 15px; }
     
-    .container { padding: 20px; }
-    .card { background: var(--card-bg); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border-color); backdrop-filter: blur(5px); }
-    .btn { background: var(--accent-color); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: bold; width: 100%; cursor: pointer; transition: 0.2s; }
-    .btn:active { transform: scale(0.98); }
+    .container { padding: 20px; max-width: 500px; margin: 0 auto; }
+    .card { background: var(--card-bg); border-radius: 20px; padding: 22px; margin-bottom: 18px; border: 1px solid var(--border-color); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
     
-    /* Navigation Bar */
-    .navbar {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      background: rgba(15, 23, 42, 0.95);
-      display: flex; justify-content: space-around;
-      padding: 10px 0; border-top: 1px solid var(--border-color);
-      backdrop-filter: blur(10px); z-index: 100;
+    .btn { 
+      background: var(--accent-color); 
+      color: white; 
+      border: none; 
+      padding: 15px; 
+      border-radius: 12px; 
+      font-weight: bold; 
+      font-size: 16px; 
+      width: 100%; 
+      cursor: pointer; 
+      transition: all 0.2s ease;
+      display: block;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,136,204,0.3);
     }
-    .nav-item { color: var(--text-dim); text-decoration: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
-    .nav-item.active { color: var(--accent-color); font-weight: bold; }
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled { background: #475569; cursor: not-allowed; opacity: 0.6; box-shadow: none; }
     
+    .navbar {
+      position: fixed; 
+      bottom: 0; left: 0; right: 0;
+      background: rgba(15, 23, 42, 0.98);
+      display: flex; 
+      justify-content: space-around;
+      align-items: center;
+      padding: 12px 0 16px 0; 
+      border-top: 1px solid var(--border-color);
+      backdrop-filter: blur(12px); 
+      z-index: 100;
+      box-shadow: 0 -5px 20px rgba(0,0,0,0.4);
+    }
+    .nav-item { 
+      color: var(--text-dim); 
+      text-decoration: none; 
+      font-size: 13px; 
+      font-weight: 600;
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center;
+      gap: 5px; 
+      cursor: pointer;
+      flex: 1;
+      padding: 8px 0;
+      transition: all 0.2s;
+    }
+    .nav-item.active { 
+      color: var(--accent-color); 
+      font-weight: bold; 
+      transform: translateY(-2px);
+    }
+
     .tab-content { display: none; }
     .tab-content.active { display: block; }
-    input, select { width: 100%; padding: 12px; margin-top: 8px; border-radius: 8px; border: 1px solid var(--border-color); background: #0f172a; color: white; box-sizing: border-box; }
+    input, select { width: 100%; padding: 14px; margin-top: 10px; border-radius: 10px; border: 1px solid var(--border-color); background: #0f172a; color: white; box-sizing: border-box; font-size: 15px; }
 
-    /* Mandatory Join Modal Screen Overlay */
     #join-modal {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -77,11 +116,42 @@
     .modal-box {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
-      border-radius: 16px;
+      border-radius: 20px;
       padding: 25px;
       text-align: center;
       width: 100%;
-      max-width: 350px;
+      max-width: 360px;
+    }
+
+    .daily-reward-box {
+      background: #1e293b;
+      border: 1px solid var(--border-color);
+      border-radius: 15px;
+      padding: 15px;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    .daily-reward-days {
+      display: flex;
+      justify-content: space-between;
+      margin: 15px 0;
+    }
+    .day-circle {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: #334155;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--text-dim);
+    }
+    .day-circle.active {
+      background: #f59e0b;
+      color: white;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
     }
   </style>
 </head>
@@ -92,13 +162,13 @@
     <div class="modal-box">
       <h2 style="margin-top: 0; color: var(--accent-color);">Community Verification</h2>
       <p style="font-size: 14px; color: var(--text-dim); line-height: 1.5; margin-bottom: 20px;">
-        You must join our official community group to unlock and start using this app.
+        You MUST join our official Telegram channel to unlock and use this application.
       </p>
       <button class="btn" onclick="window.joinChannel()" style="margin-bottom: 12px; background: #10b981;">
-        Join Official Group
+        1. Join Telegram Channel
       </button>
-      <button class="btn" onclick="window.verifyJoin()" style="background: var(--accent-color);">
-        I Have Joined
+      <button id="verify-btn" class="btn" onclick="window.verifyJoin()" style="background: var(--accent-color);">
+        2. I Have Joined (Verify)
       </button>
     </div>
   </div>
@@ -107,7 +177,7 @@
   <header>
     <div class="user-info">
       <div class="avatar" id="user-avatar">U</div>
-      <span id="user-name" style="font-weight: 600;">User</span>
+      <span id="user-name" style="font-weight: 600; font-size: 16px;">User</span>
     </div>
     <div class="badge">Coins: <span id="coin-balance">0</span></div>
   </header>
@@ -118,15 +188,35 @@
     <!-- Tab 1: Dashboard -->
     <div id="tab-dashboard" class="tab-content active">
       <div class="card" style="text-align: center;">
-        <h2 style="margin: 0; color: var(--text-dim);">Total Earnings</h2>
-        <h1 style="font-size: 40px; margin: 10px 0; color: #f59e0b;"><span id="dash-coins">0</span> Coins</h1>
-        <p style="margin: 0; color: #22c55e; font-weight: bold;">Value: $<span id="dash-usd">0.000</span></p>
+        <h3 style="margin: 0; color: var(--text-dim);">Total Balance</h3>
+        <h1 style="font-size: 42px; margin: 12px 0; color: #f59e0b;"><span id="dash-coins">0</span> Coins</h1>
+        <p style="margin: 0; color: #22c55e; font-weight: bold; font-size: 16px;">Value: $<span id="dash-usd">0.00</span></p>
+      </div>
+
+      <!-- Daily Reward Section -->
+      <div class="daily-reward-box">
+        <h3 style="margin: 0 0 10px 0; color: white; font-size: 16px;">Daily Check-In</h3>
+        <p style="color: var(--text-dim); font-size: 13px; margin: 0;">Claim daily coins. Complete 7 days check-in to unlock withdrawal! Day 7 gives 700 coins!</p>
+        
+        <div class="daily-reward-days" id="reward-days-container">
+          <div class="day-circle" id="day-1">1</div>
+          <div class="day-circle" id="day-2">2</div>
+          <div class="day-circle" id="day-3">3</div>
+          <div class="day-circle" id="day-4">4</div>
+          <div class="day-circle" id="day-5">5</div>
+          <div class="day-circle" id="day-6">6</div>
+          <div class="day-circle" id="day-7">7</div>
+        </div>
+        
+        <button id="daily-claim-btn" class="btn" style="padding: 10px; font-size: 14px; background: #f59e0b;" onclick="window.claimDailyReward()">
+          Claim Reward
+        </button>
       </div>
 
       <div class="card">
         <h3>Watch & Earn</h3>
-        <p style="color: var(--text-dim); font-size: 14px;">Watch short ads to earn 10 coins ($0.001) per view.</p>
-        <button class="btn" onclick="window.watchAd()">Watch Ad (+10 Coins)</button>
+        <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 15px;">Watch full ads to earn 100 coins (50 Cents) per view.</p>
+        <button class="btn" onclick="window.watchAd()">Watch Ad (+100 Coins)</button>
       </div>
     </div>
 
@@ -134,8 +224,8 @@
     <div id="tab-ads" class="tab-content">
       <div class="card">
         <h3>Monetag Ad Tasks</h3>
-        <p style="color: var(--text-dim); font-size: 14px;">Complete ad tasks below to gain extra rewards.</p>
-        <button class="btn" style="margin-bottom: 10px;" onclick="window.watchAd()">Watch Direct Ad</button>
+        <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 15px;">Complete ad tasks below to earn extra coins.</p>
+        <button class="btn" style="margin-bottom: 12px;" onclick="window.watchAd()">Watch Direct Ad</button>
         <button class="btn" style="background: #8b5cf6;" onclick="window.watchAd()">Bonus Video Ad</button>
       </div>
     </div>
@@ -144,8 +234,8 @@
     <div id="tab-referral" class="tab-content">
       <div class="card">
         <h3>Invite Friends</h3>
-        <p style="color: var(--text-dim); font-size: 14px;">Earn 50 bonus coins for every friend who joins using your link!</p>
-        <button class="btn" style="background: #22c55e;" onclick="window.shareReferral()">Invite Friends</button>
+        <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 15px;">Earn 50 bonus coins for every friend who joins using your link!</p>
+        <button class="btn" style="background: #22c55e; margin-bottom: 10px;" onclick="window.shareReferral()">Share Referral Link</button>
       </div>
     </div>
 
@@ -153,7 +243,8 @@
     <div id="tab-wallet" class="tab-content">
       <div class="card">
         <h3>Withdraw Funds</h3>
-        <p style="font-size: 14px; color: var(--text-dim);">Minimum Withdrawal: <strong style="color: white;">$2.00 (20,000 Coins)</strong></p>
+        <p style="font-size: 14px; color: var(--text-dim);">Minimum Withdrawal: <strong style="color: white;">$2.00 (400 Coins)</strong></p>
+        <p style="font-size: 13px; color: #f59e0b; margin-top: 4px;">Requirement: Must complete 7-day Daily Check-In streak before withdrawing.</p>
         
         <label style="font-size: 13px; color: var(--text-dim);">Select Payment Method:</label>
         <select id="paymentMethod" onchange="window.updatePlaceholder()">
@@ -177,6 +268,7 @@
         <p style="color: var(--text-dim);">User ID: <span id="stat-uid" style="color: white;">-</span></p>
         <p style="color: var(--text-dim);">Total Ads Watched: <span id="stat-ads" style="color: white;">0</span></p>
         <p style="color: var(--text-dim);">Total Referrals: <span id="stat-ref" style="color: white;">0</span></p>
+        <p style="color: var(--text-dim);">Check-In Streak: <span id="stat-streak" style="color: #f59e0b;">0</span> / 7 Days</p>
       </div>
     </div>
 
@@ -184,11 +276,26 @@
 
   <!-- Bottom Navigation Bar -->
   <div class="navbar">
-    <div class="nav-item active" onclick="window.switchTab('dashboard', this)">Dashboard</div>
-    <div class="nav-item" onclick="window.switchTab('ads', this)">Ads</div>
-    <div class="nav-item" onclick="window.switchTab('referral', this)">Refer</div>
-    <div class="nav-item" onclick="window.switchTab('wallet', this)">Wallet</div>
-    <div class="nav-item" onclick="window.switchTab('stats', this)">Stats</div>
+    <div class="nav-item active" onclick="window.switchTab('dashboard', this)">
+      <span style="font-size: 18px;">🏠</span>
+      <span>Dashboard</span>
+    </div>
+    <div class="nav-item" onclick="window.switchTab('ads', this)">
+      <span style="font-size: 18px;">📺</span>
+      <span>Ads</span>
+    </div>
+    <div class="nav-item" onclick="window.switchTab('referral', this)">
+      <span style="font-size: 18px;">👥</span>
+      <span>Refer</span>
+    </div>
+    <div class="nav-item" onclick="window.switchTab('wallet', this)">
+      <span style="font-size: 18px;">💳</span>
+      <span>Wallet</span>
+    </div>
+    <div class="nav-item" onclick="window.switchTab('stats', this)">
+      <span style="font-size: 18px;">📊</span>
+      <span>Stats</span>
+    </div>
   </div>
 
   <!-- Firebase Realtime Database SDK & Main Logic -->
@@ -196,7 +303,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // Your Exact Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyCizaCuNkTOsdyeLErVsUzjTj6P0Du6zZw",
       authDomain: "social-media-fe850.firebaseapp.com",
@@ -207,80 +313,215 @@
       appId: "1:264506398502:web:56d2722066cb55ec8353e7"
     };
 
-    // Initialize Firebase & Realtime Database
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Initialize Telegram WebApp SDK
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+    const tg = window.Telegram?.WebApp;
+    if (tg) tg.expand();
 
-    const user = tg.initDataUnsafe?.user || { id: 12345678, first_name: "Demo User" };
-    
-    // UI Init
-    document.getElementById('user-name').innerText = user.first_name;
-    document.getElementById('user-avatar').innerText = user.first_name.charAt(0);
+    const user = tg?.initDataUnsafe?.user || { id: 12345678, first_name: "Demo User" };
+    const startParam = tg?.initDataUnsafe?.start_param;
+
+    const BOT_USERNAME = "Social_Pulse_earnBot"; 
+    const CHANNEL_USERNAME = "@rumaisaxx";
+    const BOT_TOKEN = "8731863495:AAEy2Z-QyUzpUqfaJH3EUpO7bPBJ_ol4Yq0"; 
+
+    // Coin Value Multiplier (100 coins = $0.5 => 1 coin = $0.005)
+    const COIN_VALUE_USD = 0.005;
+
+    document.getElementById('user-name').innerText = user.first_name || "User";
+    document.getElementById('user-avatar').innerText = (user.first_name || "U").charAt(0);
     document.getElementById('stat-uid').innerText = user.id;
 
     const userRef = ref(db, 'users/' + user.id);
 
-    // Fetch user data or create if new
     async function loadUserData() {
       try {
         const snap = await get(userRef);
         if (!snap.exists()) {
+          // Create new user entry
           await set(userRef, {
             coins: 0,
             adsWatched: 0,
             referrals: 0,
-            createdAt: new Date().toISOString()
+            referredBy: startParam || null,
+            createdAt: new Date().toISOString(),
+            lastClaimDate: null,
+            consecutiveDays: 0,
+            hasCompleted7Days: false
           });
+
+          if (startParam && String(startParam) !== String(user.id)) {
+            const referrerRef = ref(db, 'users/' + startParam);
+            const refSnap = await get(referrerRef);
+            if (refSnap.exists()) {
+              const refData = refSnap.val();
+              await update(referrerRef, {
+                coins: (refData.coins || 0) + 50,
+                referrals: (refData.referrals || 0) + 1
+              });
+            }
+          }
         }
         await updateUI();
+        checkDailyRewardStatus();
       } catch (err) {
-        console.error("Firebase Database Error:", err);
+        console.error("Firebase Initialization Error:", err);
       }
     }
 
-    // Refresh UI elements
     async function updateUI() {
       try {
         const snap = await get(userRef);
         if (snap.exists()) {
           const data = snap.val();
           const coins = data.coins || 0;
-          const usd = (coins * 0.0001).toFixed(3);
+          
+          // Calculate USD based on new multiplier
+          const usd = (coins * COIN_VALUE_USD).toFixed(2);
 
           document.getElementById('coin-balance').innerText = coins;
           document.getElementById('dash-coins').innerText = coins;
           document.getElementById('dash-usd').innerText = usd;
           document.getElementById('stat-ads').innerText = data.adsWatched || 0;
           document.getElementById('stat-ref').innerText = data.referrals || 0;
+          document.getElementById('stat-streak').innerText = data.consecutiveDays || 0;
         }
       } catch (err) {
         console.error("UI Update Error:", err);
       }
     }
 
-    // Global Functions Binding
-    window.joinChannel = function() {
-      tg.openTelegramLink('https://t.me/socialpulse_bots');
-    };
+    // ==========================================
+    // Daily Check-In Logic
+    // ==========================================
+    async function checkDailyRewardStatus() {
+      const snap = await get(userRef);
+      if (!snap.exists()) return;
 
-    window.verifyJoin = function() {
-      document.getElementById('join-modal').style.display = 'none';
-    };
+      const data = snap.val();
+      const lastClaim = data.lastClaimDate;
+      let streak = data.consecutiveDays || 0;
 
-    window.watchAd = async function() {
-      // Trigger Monetag SDK Rewarded / Interstitial Ad if available
-      if (typeof show_11759773 === 'function') {
-        show_11759773().then(() => {
-          rewardUser();
-        }).catch(() => {
-          rewardUser();
-        });
+      const today = new Date().toISOString().split('T')[0];
+      const btn = document.getElementById('daily-claim-btn');
+
+      // Update UI circles based on streak
+      for (let i = 1; i <= 7; i++) {
+        const circle = document.getElementById(`day-${i}`);
+        if (i <= streak) {
+          circle.classList.add('active');
+        } else {
+          circle.classList.remove('active');
+        }
+      }
+
+      if (lastClaim === today) {
+        btn.innerText = "Claimed for Today";
+        btn.disabled = true;
       } else {
-        rewardUser();
+        btn.innerText = `Claim Day ${streak < 7 ? streak + 1 : 1} Reward`;
+        btn.disabled = false;
+      }
+    }
+
+    window.claimDailyReward = async function() {
+      try {
+        const snap = await get(userRef);
+        if (!snap.exists()) return;
+
+        let data = snap.val();
+        let lastClaim = data.lastClaimDate;
+        let streak = data.consecutiveDays || 0;
+        let coins = data.coins || 0;
+        let hasCompleted7Days = data.hasCompleted7Days || false;
+
+        const todayDate = new Date();
+        const todayStr = todayDate.toISOString().split('T')[0];
+
+        // Check if already claimed today
+        if (lastClaim === todayStr) {
+          alert("You already claimed your reward today!");
+          return;
+        }
+
+        // Calculate if streak is broken (missed a day)
+        if (lastClaim) {
+          const lastClaimDate = new Date(lastClaim);
+          const diffTime = Math.abs(todayDate - lastClaimDate);
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+          if (diffDays > 1 || streak >= 7) {
+            streak = 0; // Reset streak if missed a day OR completed 7 days
+          }
+        }
+
+        streak += 1;
+        const rewardCoins = streak * 100; // Day 1 = 100, Day 2 = 200 ... Day 7 = 700
+
+        if (streak >= 7) {
+          hasCompleted7Days = true;
+        }
+
+        await update(userRef, {
+          coins: coins + rewardCoins,
+          lastClaimDate: todayStr,
+          consecutiveDays: streak,
+          hasCompleted7Days: hasCompleted7Days
+        });
+
+        alert(`🎉 Day ${streak} Check-in successful! You earned ${rewardCoins} Coins.`);
+        updateUI();
+        checkDailyRewardStatus();
+
+      } catch (err) {
+        console.error("Daily Claim Error:", err);
+      }
+    };
+
+    window.joinChannel = function() {
+      const cleanChannel = CHANNEL_USERNAME.replace('@','');
+      if (tg && tg.openTelegramLink) {
+        tg.openTelegramLink(`https://t.me/${cleanChannel}`);
+      } else {
+        window.open(`https://t.me/${cleanChannel}`, '_blank');
+      }
+    };
+
+    window.verifyJoin = async function() {
+      const verifyBtn = document.getElementById('verify-btn');
+      verifyBtn.innerText = "Verifying...";
+      verifyBtn.disabled = true;
+
+      try {
+        const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getChatMember?chat_id=${CHANNEL_USERNAME}&user_id=${user.id}`);
+        const data = await res.json();
+        
+        if (data.ok && ['member', 'administrator', 'creator'].includes(data.result?.status)) {
+          document.getElementById('join-modal').style.display = 'none';
+        } else {
+          alert("Verification Failed! You have not joined the channel yet.");
+        }
+      } catch (err) {
+        console.error("API Verification Error:", err);
+        alert("Verification Failed! Please try again.");
+      } finally {
+        verifyBtn.innerText = "2. I Have Joined (Verify)";
+        verifyBtn.disabled = false;
+      }
+    };
+
+    window.watchAd = function() {
+      if (typeof show_11759773 === 'function') {
+        show_11759773()
+          .then(() => {
+            rewardUser();
+          })
+          .catch(() => {
+            alert("You must watch the full ad to earn 100 coins!");
+          });
+      } else {
+        alert("Ad Network loading. Please try again in 5 seconds.");
       }
     };
 
@@ -290,11 +531,11 @@
         const currentData = snap.val() || { coins: 0, adsWatched: 0 };
         
         await update(userRef, {
-          coins: (currentData.coins || 0) + 10,
+          coins: (currentData.coins || 0) + 100,
           adsWatched: (currentData.adsWatched || 0) + 1
         });
 
-        alert("Success! You earned 10 Coins.");
+        alert("Success! You watched the full ad and earned 100 Coins.");
         updateUI();
       } catch (err) {
         console.error("Failed to update points:", err);
@@ -304,12 +545,22 @@
     window.requestWithdrawal = async function() {
       try {
         const snap = await get(userRef);
-        const coins = snap.val()?.coins || 0;
+        const data = snap.val() || {};
+        const coins = data.coins || 0;
+        const consecutiveDays = data.consecutiveDays || 0;
+        const hasCompleted7Days = data.hasCompleted7Days || false;
         const method = document.getElementById('paymentMethod').value;
         const address = document.getElementById('walletAddress').value.trim();
 
-        if (coins < 20000) {
-          alert("Insufficient balance! Minimum withdrawal is 20,000 Coins ($2.00).");
+        // Warning message if user tries to withdraw before completing 7 days check-in
+        if (!hasCompleted7Days && consecutiveDays < 7) {
+          alert("⚠️ Warning: You have not completed the required 1 to 7 days Daily Check-In streak yet! Please complete your 7-day check-in before requesting a withdrawal.");
+          return;
+        }
+
+        // 400 Coins = $2.00 (since 100 coins = $0.5)
+        if (coins < 400) {
+          alert("Insufficient balance! Minimum withdrawal is 400 Coins ($2.00).");
           return;
         }
 
@@ -330,8 +581,14 @@
     };
 
     window.shareReferral = function() {
-      const refLink = `https://t.me/share/url?url=https://t.me/socialpulse_bots?start=${user.id}&text=Join%20and%20earn%20money!`;
-      tg.openTelegramLink(refLink);
+      const referralLink = `https://t.me/${BOT_USERNAME}/open?startapp=${user.id}`;
+      const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent("Join this mini app and earn money daily!")}`;
+      
+      if (tg && tg.openTelegramLink) {
+        tg.openTelegramLink(shareUrl);
+      } else {
+        window.open(shareUrl, '_blank');
+      }
     };
 
     window.switchTab = function(tabName, element) {
@@ -354,7 +611,6 @@
       }
     };
 
-    // Load Data on Startup
     loadUserData();
   </script>
 </body>
